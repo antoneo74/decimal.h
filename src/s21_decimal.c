@@ -25,21 +25,21 @@ void invert_bit(s21_decimal *src, unsigned ind) {
 }
 
 /* Печатаем побитово указанный децимал*/
-// void print_bit(s21_decimal n) {
-//   char str[129];
-//   str[128] = '\0';
-//   unsigned tmp = 0;
-//   for (int i = 127; i >= 0; i--, tmp++) {
-//     str[i] = get_bit(n, tmp) + 48;
-//   }
-//   for (int i = 0; i < 128; i++) {
-//     if (!(i % 32) && i) {
-//       printf("| ");
-//     }
-//     printf("%c", str[i]);
-//   }
-//   printf("\n");
-// }
+void print_bit(s21_decimal n) {
+  char str[129];
+  str[128] = '\0';
+  unsigned tmp = 0;
+  for (int i = 127; i >= 0; i--, tmp++) {
+    str[i] = get_bit(n, tmp) + 48;
+  }
+  for (int i = 0; i < 128; i++) {
+    if (!(i % 32) && i) {
+      printf("| ");
+    }
+    printf("%c", str[i]);
+  }
+  printf("\n");
+}
 
 /* Инициализация децимала нулями */
 void s21_init_decimal_by_zero(s21_decimal *m) {
@@ -47,34 +47,34 @@ void s21_init_decimal_by_zero(s21_decimal *m) {
 }
 
 /* Побитовый сдвиг децимала влево */
-// void shift_left(s21_decimal *src, unsigned count) {
-//   while (count--) {
-//     src->bits[HIGH] <<= 1;
-//     if (get_bit(*src, 63)) {
-//       set_bit(src, 64);
-//     }
-//     src->bits[MID] <<= 1;
-//     if (get_bit(*src, 31)) {
-//       set_bit(src, 32);
-//     }
-//     src->bits[LOW] <<= 1;
-//   }
-// }
+void shift_left(s21_decimal *src, unsigned count) {
+  while (count--) {
+    src->bits[HIGH] <<= 1;
+    if (get_bit(*src, 63)) {
+      set_bit(src, 64);
+    }
+    src->bits[MID] <<= 1;
+    if (get_bit(*src, 31)) {
+      set_bit(src, 32);
+    }
+    src->bits[LOW] <<= 1;
+  }
+}
 
 /* Побитовый сдвиг децимала вправо */
-// void shift_right(s21_decimal *src, unsigned count) {
-//   while (count--) {
-//     src->bits[LOW] >>= 1;
-//     if (get_bit(*src, 32)) {
-//       set_bit(src, 31);
-//     }
-//     src->bits[MID] >>= 1;
-//     if (get_bit(*src, 64)) {
-//       set_bit(src, 63);
-//     }
-//     src->bits[HIGH] >>= 1;
-//   }
-// }
+void shift_right(s21_decimal *src, unsigned count) {
+  while (count--) {
+    src->bits[LOW] >>= 1;
+    if (get_bit(*src, 32)) {
+      set_bit(src, 31);
+    }
+    src->bits[MID] >>= 1;
+    if (get_bit(*src, 64)) {
+      set_bit(src, 63);
+    }
+    src->bits[HIGH] >>= 1;
+  }
+}
 
 /* Получение скейла */
 unsigned get_scale(s21_decimal value) { return value.bits[SCALE] << 1 >> 17; }
@@ -119,49 +119,6 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   result = 0;
   return result;
 }
-
-/* Преобразование  в децимал из float
-    обработан общий случай, c точностью 6 знаков после точки
-    0 - OK
-    1 - ошибка конвертации
-*/
-// int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-//   int flag = 0;
-//   char str[255];
-//   int sign = 0;
-//   if (src < 0) sign = 1;
-//   float_to_str(src, str);
-//   flag = convert_float_to_dec(str, dst);
-//   set_scale(dst, 6);
-//   if (sign) set_bit(dst, 127);
-//   return flag;
-// }
-
-/* Преобразование из decimal во float */
-// int s21_from_decimal_to_float(s21_decimal src, float *dst) {
-//   int flag = 0;
-//   double tmp = 0;
-//   if (dst) {
-//     for (int i = 0; i < 96; i++) {
-//       if (get_bit(src, i)) {
-//         tmp += pow(2, i);
-//       }
-//     }
-//     if (!get_scale(src)) {
-//       for (int i = get_scale(src); i > 0; i--) {
-//         tmp /= 10;
-//       }
-//     }
-//     tmp /= 1000000;
-//     *dst = (float)tmp;
-//     if (get_bit(src, 127)) {
-//       *dst *= -1;
-//     }
-//   } else {
-//     flag = 1;
-//   }
-//   return flag;
-// }
 
 /* умножение биг децимала на 10
   (эквивалентно сдвигу влево на 1 и на 3)
@@ -613,7 +570,7 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return flag;
 }
 
-/* остатокот деления двух децималов
+/* остаток от деления двух децималов
     0 - OK
     1 - число слишком велико или равно бесконечности
     2 - число слишком мало или равно отрицательной бесконечности
@@ -1072,6 +1029,11 @@ int s21_get_exp_float(float src) {
   return ((t >> 23) & 0b11111111) - 127;
 }
 
+/* Преобразование  из float в децимал
+    обработан общий случай, c точностью 6 знаков после точки
+    0 - OK
+    1 - ошибка конвертации
+*/
 // операции по конвертации f to dec
 void s21_float_decimal(float src, s21_decimal *dst) {
   int flag = 0;
@@ -1123,6 +1085,11 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
   return res;
 }
 
+/* Преобразование  из децимал во float
+    обработан общий случай, c точностью 6 знаков после точки
+    0 - OK
+    1 - ошибка конвертации
+*/
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
   double result = 0.0;
   int count = 0;

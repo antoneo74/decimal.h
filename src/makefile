@@ -16,10 +16,10 @@ all: clean s21_decimal.a test gcov_report
 
 test: s21_decimal.a
 ifeq ($(OS), Darwin)
-	$(CC) $(CFLAGS) -o test unit_tests.c s21_decimal.a -lcheck -lgcov -coverage
+	$(CC) $(CFLAGS) -o test unit_tests.c s21_decimal.a -lcheck -coverage
 	./test
 else
-	$(CC) $(CFLAGS) -o test unit_tests.c s21_decimal.a -lcheck -lsubunit -lrt -lpthread -lm -lgcov -coverage
+	$(CC) $(CFLAGS) -o test unit_tests.c s21_decimal.a -lcheck -lsubunit -lrt -lpthread -lm -coverage
 	./test
 endif
 
